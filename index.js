@@ -31,7 +31,11 @@ async function run() {
 
     // Classes related API's
     app.get("/classes", async (req, res) => {
-      const result = await classesCollection.find().toArray();
+      const query = {};
+      const options = {
+        sort: { students: -1 },
+      };
+      const result = await classesCollection.find(query, options).toArray();
       res.send(result);
     });
 
