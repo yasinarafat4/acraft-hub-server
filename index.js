@@ -26,6 +26,15 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    // Collections
+    const classesCollection = client.db("ACraftDB").collection("classes");
+
+    // Classes related API's
+    app.get("/classes", async (req, res) => {
+      const result = await classesCollection.find().toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
