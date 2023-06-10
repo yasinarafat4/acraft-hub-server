@@ -28,6 +28,9 @@ async function run() {
   try {
     // Collections
     const classesCollection = client.db("ACraftDB").collection("classes");
+    const instructorsCollection = client
+      .db("ACraftDB")
+      .collection("instructors");
 
     // Classes related API's
     app.get("/classes", async (req, res) => {
@@ -39,11 +42,15 @@ async function run() {
       res.send(result);
     });
 
+    // Instructors related API's
+    app.get("/instructors", async (req, res) => {
+      const result = await instructorsCollection.find().toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Hey dear Developer you are successfully connected to MongoDB!"
-    );
+    console.log("Hey Developer you are successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
