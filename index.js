@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -46,10 +47,27 @@ async function run() {
     });
 
     // Selected Classes related API's
+    app.get("/selectedClasses", async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email };
+      const result = await selectedClassesCollection.find(query).toArray();
+      res.send(result);
+    });
+
     app.post("/selectedClasses", async (req, res) => {
       const singleClass = req.body;
       console.log(singleClass);
       const result = await selectedClassesCollection.insertOne(singleClass);
+      res.send(result);
+    });
+
+    app.delete("/selectedClasses/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await selectedClassesCollection.deleteOne(query);
       res.send(result);
     });
 
