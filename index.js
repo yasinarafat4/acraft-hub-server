@@ -69,6 +69,19 @@ async function run() {
       res.send(result);
     });
 
+    // Make instructor API
+    app.patch("/users/instructor/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "instructor",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
     // Classes related API's
     app.get("/classes", async (req, res) => {
       const query = {};
