@@ -28,6 +28,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Collections
+    const usersCollection = client.db("ACraftDB").collection("users");
     const classesCollection = client.db("ACraftDB").collection("classes");
     const selectedClassesCollection = client
       .db("ACraftDB")
@@ -35,6 +36,14 @@ async function run() {
     const instructorsCollection = client
       .db("ACraftDB")
       .collection("instructors");
+
+    // Users related API's
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      console.log(singleClass);
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    });
 
     // Classes related API's
     app.get("/classes", async (req, res) => {
