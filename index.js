@@ -69,6 +69,32 @@ async function run() {
       res.send({ token });
     });
 
+    // Verify Admin
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== "admin") {
+        return res
+          .status(403)
+          .send({ error: true, message: "Forbidden Access" });
+      }
+      next();
+    };
+
+    // Verify Instructor
+    const verifyInstructor = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== "instructor") {
+        return res
+          .status(403)
+          .send({ error: true, message: "Forbidden Access" });
+      }
+      next();
+    };
+
     // Users related API's
     app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
@@ -149,6 +175,13 @@ async function run() {
         sort: { students: -1 },
       };
       const result = await classesCollection.find(query, options).toArray();
+      res.send(result);
+    });
+
+    // Add class related API
+    app.post("/classes", verifyJWT, verifyInstructor, async (req, res) => {
+      const newClass = req.body;
+      const result = await classesCollection.insertOne(newClass);
       res.send(result);
     });
 
