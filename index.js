@@ -193,7 +193,22 @@ async function run() {
       res.send(result);
     });
 
-    // Delete class by Admin
+    // Approve classes API
+    app.patch("/classes/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedClass = req.body;
+      console.log(updatedClass);
+      const updateDoc = {
+        $set: {
+          status: updatedClass.status,
+        },
+      };
+      const result = await classesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // Delete class by Admin API
     app.delete("/classes/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
