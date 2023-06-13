@@ -186,6 +186,17 @@ async function run() {
       res.send(result);
     });
 
+    // Classes related API's
+    app.get("/classes", async (req, res) => {
+      const status = req.params.status;
+      const query = { status: "approve" };
+      const options = {
+        sort: { students: -1 },
+      };
+      const result = await classesCollection.find(query, options).toArray();
+      res.send(result);
+    });
+
     // Add class related API
     app.post("/classes", verifyJWT, verifyInstructor, async (req, res) => {
       const newClass = req.body;
