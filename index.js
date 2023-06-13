@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -186,7 +187,6 @@ async function run() {
       res.send(result);
     });
 
-    // Classes related API's
     app.get("/classes", async (req, res) => {
       const status = req.params.status;
       const query = { status: "approve" };
@@ -197,7 +197,7 @@ async function run() {
       res.send(result);
     });
 
-    // Add class related API
+    // Add Class related API
     app.post("/classes", verifyJWT, verifyInstructor, async (req, res) => {
       const newClass = req.body;
       const result = await classesCollection.insertOne(newClass);
@@ -264,6 +264,20 @@ async function run() {
     app.get("/instructors", async (req, res) => {
       const result = await instructorsCollection.find().toArray();
       res.send(result);
+    });
+
+    // Payment Intents related API
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
     });
 
     // Send a ping to confirm a successful connection
