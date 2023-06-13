@@ -155,6 +155,14 @@ async function run() {
       res.send(result);
     });
 
+    // User deleted API
+    app.delete("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Make instructor API
     app.patch("/users/instructor/:id", async (req, res) => {
       const id = req.params.id;
@@ -182,6 +190,14 @@ async function run() {
     app.post("/classes", verifyJWT, verifyInstructor, async (req, res) => {
       const newClass = req.body;
       const result = await classesCollection.insertOne(newClass);
+      res.send(result);
+    });
+
+    // Delete class by Admin
+    app.delete("/classes/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classesCollection.deleteOne(query);
       res.send(result);
     });
 
