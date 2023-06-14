@@ -59,6 +59,7 @@ async function run() {
     const instructorsCollection = client
       .db("ACraftDB")
       .collection("instructors");
+    const paymentsCollection = client.db("ACraftDB").collection("payments");
 
     // JWT related API's
     app.post("/jwt", (req, res) => {
@@ -273,11 +274,12 @@ async function run() {
       res.send(result);
     });
 
-    // Payment Intents related API
+    // Payment related API's
+
+    // payment intent
     app.post("/create-payment-intent", verifyJWT, async (req, res) => {
       const { price } = req.body;
       const amount = price * 100;
-      console.log(price, amount);
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount,
         currency: "usd",
@@ -286,6 +288,13 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+
+    // store payment history to database
+    app.post("/payments", async (req, res) => {
+      const payment = req.body;
+      const result = await paymentsCollection.insertOne(payment);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
