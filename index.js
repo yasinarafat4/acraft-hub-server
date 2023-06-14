@@ -64,7 +64,6 @@ async function run() {
     // JWT related API's
     app.post("/jwt", (req, res) => {
       const user = req.body;
-      console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
       });
@@ -105,10 +104,8 @@ async function run() {
 
     app.post("/users", async (req, res) => {
       const user = req.body;
-      console.log(user);
       const query = { email: user.email };
       const existingUser = await usersCollection.findOne(query);
-      console.log(existingUser);
       if (existingUser) {
         return res.send({ message: "User already exist" });
       }
@@ -210,7 +207,6 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const updatedClass = req.body;
-      console.log(updatedClass);
       const updateDoc = {
         $set: {
           status: updatedClass.status,
@@ -249,7 +245,6 @@ async function run() {
 
     app.post("/selectedClasses", async (req, res) => {
       const singleClass = req.body;
-      console.log(singleClass);
       const result = await selectedClassesCollection.insertOne(singleClass);
       res.send(result);
     });
