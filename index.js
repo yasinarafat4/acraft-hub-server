@@ -291,9 +291,27 @@ async function run() {
     });
 
     // store payment history to database
-    app.post("/payments", async (req, res) => {
+    app.post("/payments", verifyJWT, async (req, res) => {
       const payment = req.body;
-      const result = await paymentsCollection.insertOne(payment);
+      const InsertResult = await paymentsCollection.insertOne(payment);
+      const id = payment.singleClassId;
+
+      const filter = { _id: new ObjectId(id) };
+      const deleteResult = await selectedClassesCollection.deleteOne(filter);
+
+      res.send({ InsertResult, deleteResult });
+    });
+
+    app.get("/payments", async (req, res) => {
+      const paid = req.params.paid;
+      const filter = req.params.email;
+      const query = { paid: true };
+      const options = {
+        sort: { date: -1 },
+      };
+      const result = await paymentsCollection
+        .find(query, options, filter)
+        .toArray();
       res.send(result);
     });
 
